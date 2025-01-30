@@ -1,7 +1,16 @@
 # OneInfer
 Inference model all in one.
 
-OneInfer is a command-line tool to manage and serve various types of machine learning models, providing seamless integration for local and remote model management. It supports downloading models from Hugging Face, ModelScope, and local files, as well as serving models using the `llama.cpp` backend.
+OneInfer is a command-line tool to manage and serve various types of machine learning models, providing seamless integration for both local and remote model management. It supports downloading models from platforms like Hugging Face, ModelScope, and local files, and serves models using the `llama.cpp` backend.
+
+## Difference from Ollama
+
+Compared to Ollama, OneInfer offers more flexibility and choices:
+
+1. **Broader model platform support**: OneInfer supports downloading models from multiple platforms, including Hugging Face and ModelScope, whereas Ollama is limited to its platform.
+2. **Support for diverse inference backends**: OneInfer will support various inference backends, not only for language models but also for visual models and other non-LLM models, providing users with more options and freedom.
+
+With OneInfer, users can enjoy the convenience of portable local deployment while benefiting from more platform and model choices, offering a richer and more flexible experience.
 
 ## Roadmap
 - [x] Ollama-like model management
@@ -9,6 +18,7 @@ OneInfer is a command-line tool to manage and serve various types of machine lea
 - [x] Support for serving LLM models using `llama.cpp` (.gguf models)
 - [ ] More inference backends to be supported
 - [ ] More types of models to be supported
+- [ ] Ready-to-use packaged application, allowing users to download and use it immediately without the need for compilation.
 
 ## Requirements
 - Python3 for downloading models from Hugging Face and ModelScope.
