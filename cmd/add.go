@@ -112,7 +112,7 @@ def install_pip():
         subprocess.check_call([sys.executable, "-m", "ensurepip", "--upgrade"])
     except subprocess.CalledProcessError:
         print("Failed to install pip. Please install pip manually.")
-        sys.exit(1)
+        # sys.exit(1) # just skip
 
 # 安装所需的库
 def install_libraries(libraries):
