@@ -119,13 +119,13 @@ nohup oneinfer serve &
 通过指定模型名称启动特定模型。您还可以定义模型服务器的主机和端口。
 
 ```bash
-oneinfer run modelname [-p (默认值 8080)] [-h (默认值 127.0.0.1)]
+oneinfer run modelname [-p (默认值 8080)] [-H (默认值 127.0.0.1)]
 ```
 
 例如：
 
 ```bash
-oneinfer run -m DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf
+oneinfer run DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf
 ```
 
 这将调用 OneInfer 服务器并启动模型服务。

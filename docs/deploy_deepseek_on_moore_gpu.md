@@ -95,7 +95,7 @@ OneInfer提供了便捷的接口来下载和管理模型，支持从ModelScope�
    使用以下命令启动DeepSeek模型：
    
    ```bash
-   oneinfer run DeepSeek-R1-Distill-Qwen-32B-Q5_K_M.gguf -p 8080 -h 0.0.0.0
+   oneinfer run DeepSeek-R1-Distill-Qwen-32B-Q5_K_M.gguf -p 8080 -H 0.0.0.0
    ```
    
    这将启动模型服务，并将其绑定到指定的端口（默认为8080）和主机地址（默认为0.0.0.0，表示允许所有IP访问）。

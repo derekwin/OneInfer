@@ -124,7 +124,7 @@ This will start a OneInfer server in the background for managing model serving.
 Start a specific model by specifying its name. You can also define the host and port for the model server.
 
 ```bash
-oneinfer run modelname [-p (default 8080)] [-h (default 127.0.0.1)]
+oneinfer run modelname [-p (default 8080)] [-H (default 127.0.0.1)]
 ```
 
 For example:
