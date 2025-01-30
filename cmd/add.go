@@ -108,47 +108,10 @@ import importlib
 
 # 安装 pip（如果没有安装）
 def install_pip():
-    system = platform.system()
-    
-    if system == "Linux":
-        # Check the specific Linux distribution
-        with open("/etc/os-release") as os_release:
-            os_info = dict(line.strip().split("=") for line in os_release if "=" in line)
-        
-        if "Ubuntu" in os_info["NAME"] or "Debian" in os_info["NAME"]:
-            # For Debian/Ubuntu systems
-            try:
-                subprocess.check_call(["sudo", "apt", "update"])
-                subprocess.check_call(["sudo", "apt", "install", "-y", "python3-pip"])
-            except subprocess.CalledProcessError:
-                print("Failed to install pip via apt. Please install pip manually.")
-                sys.exit(1)
-        elif "CentOS" in os_info["NAME"] or "Fedora" in os_info["NAME"] or "openEuler" in os_info["NAME"]:
-            # For CentOS/Fedora systems
-            try:
-                subprocess.check_call(["sudo", "yum", "install", "-y", "python3-pip"])
-            except subprocess.CalledProcessError:
-                print("Failed to install pip via yum. Please install pip manually.")
-                sys.exit(1)
-        else:
-            print("Unsupported Linux distribution for automated pip installation.")
-            sys.exit(1)
-    elif system == "Darwin":  # macOS
-        try:
-            subprocess.check_call(["brew", "install", "python@3.9"])
-        except subprocess.CalledProcessError:
-            print("Failed to install pip via Homebrew. Please install pip manually.")
-            sys.exit(1)
-    else:
-        print(f"Unsupported operating system: {system}. You need to install pip manually.")
-        sys.exit(1)
-
-    # Attempt to upgrade pip regardless of the OS
     try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
-        print("Pip has been installed/upgraded successfully.")
+        subprocess.check_call([sys.executable, "-m", "ensurepip", "--upgrade"])
     except subprocess.CalledProcessError:
-        print("Failed to upgrade pip. Please consider upgrading pip manually.")
+        print("Failed to install pip. Please install pip manually.")
         sys.exit(1)
 
 # 安装所需的库
