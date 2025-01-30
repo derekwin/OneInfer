@@ -2,9 +2,9 @@
 
 # OneInfer 
 
-Inference model all in one.
+Inference model all in one. Easily Large Model Inference on Your Local Machine.
 
-OneInfer is a command-line tool to manage and serve various types of machine learning models, providing seamless integration for both local and remote model management. It supports downloading models from platforms like Hugging Face, ModelScope, and local files, and serves models using the `llama.cpp` backend.
+A lightweight CLI tool that simplifies deploying and managing machine learning models locally. Designed for seamless integration of popular model sources (Hugging Face Hub, ModelScope, local files) with optimized CPU/GPU execution via llama.cpp backend (more backends coming soon).
 
 [中文文档](./readme_zh.md)
 
@@ -130,7 +130,7 @@ oneinfer run modelname [-p (default 8080)] [-h (default 127.0.0.1)]
 For example:
 
 ```bash
-oneinfer run -m DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf
+oneinfer run DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf
 ```
 
 This will call the OneInfer server and start the model server.
