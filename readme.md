@@ -1,7 +1,12 @@
-# OneInfer
+# OneInfer 
+
+![](./assets/logos/oneinferlogo-long.png)
+
 Inference model all in one.
 
 OneInfer is a command-line tool to manage and serve various types of machine learning models, providing seamless integration for both local and remote model management. It supports downloading models from platforms like Hugging Face, ModelScope, and local files, and serves models using the `llama.cpp` backend.
+
+[中文文档](./readme_zh.md)
 
 ## Difference from Ollama
 
