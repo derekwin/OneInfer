@@ -109,7 +109,7 @@ import importlib
 # 安装 pip（如果没有安装）
 def install_pip():
     try:
-        subprocess.check_call([sys.executable, "-m", "ensurepip", "--upgrade"])
+        subprocess.check_call([sys.executable, "-m", "pip", "--upgrade"])
     except subprocess.CalledProcessError:
         print("Failed to install pip. Please install pip manually.")
         sys.exit(1)
