@@ -26,7 +26,10 @@ OneInfer 是一个命令行工具，用于管理和提供多种类型的机器�
 - Go 1.18+：用于构建 OneInfer。
 - git：用于下载其他代码库。
 
-## 构建与安装
+## 直接通过提供的包安装
+访问https://github.com/derekwin/OneInfer/releases并按照页面上提供的说明进行安装。
+
+## 自行编译安装
 要构建并安装 OneInfer：
 
 1. 克隆仓库：

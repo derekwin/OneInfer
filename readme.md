@@ -31,6 +31,9 @@ With OneInfer, users can enjoy the convenience of portable local deployment whil
 - Go 1.18+ for building oneinfer.
 - git for downloading other repos.
 
+## Install pre-built Package
+Checkout https://github.com/derekwin/OneInfer/releases and install oneinfer by following the instructions provided.
+
 ## Build and Install
 To build and install OneInfer:
 
