@@ -81,7 +81,7 @@ copy_libs:
 		mkdir -p $(SERVER_BIN_PATH); \
 		OS=$(shell uname); \
 		if [ "$$OS" = "Darwin" ]; then \
-			cp $(LLAMA_DIR)/build/bin/*.dylib $(SERVER_BIN_PATH); \
+			cp $(LLAMA_DIR)/build/bin/* $(SERVER_BIN_PATH); \
 		else \
 			cp $(LLAMA_DIR)/build/bin/*.so $(SERVER_BIN_PATH); \
 		fi \
