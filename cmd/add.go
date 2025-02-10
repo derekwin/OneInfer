@@ -72,8 +72,9 @@ func addModel(name, platformOrPath, filePattern string) error {
 			}
 
 			// 设置目标路径为该文件夹中的模型文件
-			destPath = filepath.Join(modelFolder, name+filepath.Ext(localPath))
-			errCopy = copyFile(localPath, destPath)
+			destfilePath := filepath.Join(modelFolder, name+filepath.Ext(localPath))
+			errCopy = copyFile(localPath, destfilePath)
+			destPath = modelFolder
 		} else {
 			return fmt.Errorf("invalid local model file path")
 		}
