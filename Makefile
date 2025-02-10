@@ -46,7 +46,7 @@ ifdef USE_SYCL
 endif
 
 # 默认目标：编译 oneinfer
-.PHONY: all clean build llama copy_so_libs
+.PHONY: all clean build llama copy_libs
 
 all: build
 
@@ -75,17 +75,22 @@ llama: $(LLAMA_DIR)
 	fi
 
 # 3. 查找并复制所有生成的 `.so` 文件到 `$(SERVER_BIN)` 目录
-copy_so_libs:
-	@echo "Copying .so libraries..."
+copy_libs:
+	@echo "Copying shared libraries..."
 	@if [ -d "$(LLAMA_DIR)/build/bin" ]; then \
 		mkdir -p $(SERVER_BIN_PATH); \
-		cp $(LLAMA_DIR)/build/bin/*.so $(SERVER_BIN_PATH); \
+		OS=$(shell uname); \
+		if [ "$$OS" = "Darwin" ]; then \
+			cp $(LLAMA_DIR)/build/bin/*.dylib $(SERVER_BIN_PATH); \
+		else \
+			cp $(LLAMA_DIR)/build/bin/*.so $(SERVER_BIN_PATH); \
+		fi \
 	else \
-		echo "No .so libraries found."; \
+		echo "No shared libraries found."; \
 	fi
 
 # 4. 编译 Go 项目
-build: llama copy_so_libs
+build: llama copy_libs
 	@echo "Building oneinfer..."; \
 	go build -o $(ONEINFER_BIN) ./main.go; \
 

@@ -2,5 +2,6 @@
 /llama-server/
 /onnx-server/
 /onnxruntime-server/
+/releases/
 oneinfer
 nohup.out
