@@ -74,6 +74,9 @@ func addModel(name, platformOrPath, filePattern string) error {
 			// 设置目标路径为该文件夹中的模型文件
 			destfilePath := filepath.Join(modelFolder, name+filepath.Ext(localPath))
 			errCopy = copyFile(localPath, destfilePath)
+
+			// 后续模型保存元数据
+			name = name + filepath.Ext(localPath)
 			destPath = modelFolder
 		} else {
 			return fmt.Errorf("invalid local model file path")
@@ -82,6 +85,7 @@ func addModel(name, platformOrPath, filePattern string) error {
 		// 如果是远程平台，使用 os/exec 调用 Python 下载模型
 		destPath = modelDir
 		errCopy = downloadModelWithPython(platformOrPath, name, modelDir, filePattern)
+		name = filepath.Join(name, filePattern)
 	}
 
 	if errCopy != nil {
@@ -90,8 +94,7 @@ func addModel(name, platformOrPath, filePattern string) error {
 
 	// 保存模型的元数据
 	metaPath := filepath.Join(modelDir, "models.json")
-	name = filepath.Join(name, filePattern)
-	err = saveModelMetadata(metaPath, name, platformOrPath, destPath, filePattern)
+	err = saveModelMetadata(metaPath, name, platformOrPath, destPath)
 	if err != nil {
 		return err
 	}
@@ -214,7 +217,7 @@ func copyFile(src, dest string) error {
 }
 
 // saveModelMetadata 保存模型的元数据到 models.json
-func saveModelMetadata(metaPath, name, platform, path, filename string) error {
+func saveModelMetadata(metaPath, name, platform, path string) error {
 	var models []map[string]string
 
 	// 读取现有的 models.json
@@ -236,7 +239,7 @@ func saveModelMetadata(metaPath, name, platform, path, filename string) error {
 
 	// 添加新模型
 	path = filepath.Join(path, name)
-	models = append(models, map[string]string{"name": filename, "platform": platform, "path": path})
+	models = append(models, map[string]string{"name": name, "platform": platform, "path": path})
 	data, err := json.MarshalIndent(models, "", "  ")
 	if err != nil {
 		return err
