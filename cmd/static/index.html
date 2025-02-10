@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneInfer Models</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f6fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button[type="submit"] {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .refresh-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            float: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .status-active {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .status-inactive {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .stop-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .stop-server-btn {
+            background-color: var(--danger-color);
+            color: white;
+            width: 100%;
+            padding: 12px;
+        }
+
+        #loading, #all-models-loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .footer {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OneInfer Model Management</h1>
+        
+        <div class="section">
+            <h2>Start New Model</h2>
+            <form id="start-form">
+                <div class="form-group">
+                    <label>Model Path (Not Model Name):</label>
+                    <input type="text" id="model" required>
+                </div>
+                <div class="form-group">
+                    <label>Host:</label>
+                    <input type="text" id="host" value="0.0.0.0" required>
+                </div>
+                <div class="form-group">
+                    <label>Port:</label>
+                    <input type="number" id="port" required>
+                </div>
+                <button type="submit">Start Model</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Running Models <button onclick="loadModels()" class="refresh-btn">↻ Refresh</button></h2>
+            <div id="loading">Loading models...</div>
+            <table id="model-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Model</th>
+                        <th>Status</th>
+                        <th>Host</th>
+                        <th>Port</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="model-list"></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>All Models <button onclick="loadAllModels()" class="refresh-btn">↻ Refresh</button></h2>
+            <div id="all-models-loading">Loading all models...</div>
+            <table id="all-models-table">
+                <thead>
+                    <tr>
+                        <th>Model Name</th>
+                        <th>Path</th>
+                        <th>Size</th>
+                        <th>Added Date</th>
+                    </tr>
+                </thead>
+                <tbody id="all-models-list"></tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <button onclick="stopServer()" class="stop-server-btn">Stop Server</button>
+        </div>
+    </div>
+
+    <script>
+        function loadModels() {
+            const modelList = document.getElementById("model-list");
+            const loading = document.getElementById("loading");
+            
+            modelList.innerHTML = "";
+            loading.style.display = "block";
+
+            fetch('/models')
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = "none";
+                    data.forEach(model => {
+                        const row = document.createElement("tr");
+                        
+                        row.innerHTML = `
+                            <td>${model.id}</td>
+                            <td>${model.model}</td>
+                            <td class="status-${model.status.toLowerCase()}">${model.status}</td>
+                            <td>${model.host}</td>
+                            <td>${model.port}</td>
+                            <td>
+                                <button class="stop-btn" onclick="stopModel(${model.id})">Stop</button>
+                            </td>
+                        `;
+
+                        modelList.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    loading.style.display = "none";
+                    alert('Error loading models: ' + error.message);
+                });
+        }
+
+        function loadAllModels() {
+            const allModelsList = document.getElementById("all-models-list");
+            const allModelsLoading = document.getElementById("all-models-loading");
+            
+            allModelsList.innerHTML = "";
+            allModelsLoading.style.display = "block";
+
+            fetch('/list')
+                .then(response => response.json())
+                .then(data => {
+                    allModelsLoading.style.display = "none";
+                    data.forEach(model => {
+                        const row = document.createElement("tr");
+                        
+                        row.innerHTML = `
+                            <td>${model.name || 'N/A'}</td>
+                            <td>${model.path || 'N/A'}</td>
+                            <td>${model.size || 'N/A'}</td>
+                            <td>${model.added_date || 'N/A'}</td>
+                        `;
+
+                        allModelsList.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    allModelsLoading.style.display = "none";
+                    alert('Error loading all models: ' + error.message);
+                });
+        }
+
+        function stopModel(id) {
+            if (!confirm('Are you sure you want to stop this model?')) return;
+
+            fetch(`/models/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadModels();
+                } else {
+                    alert('Failed to stop model');
+                }
+            })
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        document.getElementById("start-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            const model = document.getElementById("model").value;
+            const host = document.getElementById("host").value;
+            const port = parseInt(document.getElementById("port").value);
+
+            if (!model || !host || !port) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            fetch('/models', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: model,
+                    host: host,
+                    port: port
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById("start-form").reset();
+                    loadModels();
+                } else {
+                    response.text().then(text => alert('Error: ' + text));
+                }
+            })
+            .catch(error => alert('Error: ' + error.message));
+        });
+
+        function stopServer() {
+            if (!confirm('WARNING: This will stop all models and shut down the server! Continue?')) return;
+            
+            fetch('/stop', {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Server is shutting down...');
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            })
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        // Initial load
+        window.onload = function() {
+            loadModels();
+            loadAllModels();
+        };
+        // Auto-refresh every 30 seconds
+        setInterval(loadModels, 30000);
+        setInterval(loadAllModels, 30000);
+    </script>
+</body>
+</html>

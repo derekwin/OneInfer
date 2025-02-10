@@ -16,6 +16,7 @@ OneInfer 是一个命令行工具，用于管理和提供多种类型的机器�
 - [x] 类似 Ollama 的模型管理
 - [x] 支持使用 Hugging Face 或 ModelScope 中的预训练模型
 - [x] 支持通过 `llama.cpp` 后端提供 LLM 模型服务（.gguf 格式）
+- [x] Web UI 管理界面
 - [ ] 支持更多推理后端
 - [ ] 支持更多类型的模型
 - [ ] 提供开箱即用的打包应用，用户无需编译，直接下载即可使用
@@ -111,7 +112,9 @@ oneinfer rm <model_name>
 nohup oneinfer serve &
 ```
 
-这将启动 OneInfer 服务器，在后台管理模型服务。
+这将启动一个带有 Web 界面的 OneInfer 服务器，用于在后台管理模型服务。打开浏览器并访问“http://<your_server_ip>:9090”以进入 Web 界面。
+
+![](./assets/webui.png)
 
 ## 作为客户端管理
 

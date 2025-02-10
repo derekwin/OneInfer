@@ -21,6 +21,7 @@ With OneInfer, users can enjoy the convenience of portable local deployment whil
 - [x] Ollama-like model management
 - [x] Using any pre-trained models from Hugging Face or ModelScope
 - [x] Support for serving LLM models using `llama.cpp` (.gguf models)
+- [x] Web UI
 - [ ] More inference backends to be supported
 - [ ] More types of models to be supported
 - [ ] Ready-to-use packaged application, allowing users to download and use it immediately without the need for compilation.
@@ -116,7 +117,9 @@ First run OneInfer as a background server to manage model serving:
 nohup oneinfer serve &
 ```
 
-This will start a OneInfer server in the background for managing model serving.
+This will start a OneInfer server with a web UI in the background for managing model serving. Open your browser and navigate to "http://<your_server_ip>:9090" to access the web UI.
+
+![](./assets/webui.png)
 
 ## Manage as Client
 

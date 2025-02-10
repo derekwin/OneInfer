@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"syscall"
@@ -39,6 +41,26 @@ var (
 	modelMux = sync.Mutex{}
 )
 
+//go:embed static/*
+var staticFiles embed.FS
+
+func serveStaticFiles(router *mux.Router) {
+	// Serve the index.html file directly at the root path
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		data, err := staticFiles.ReadFile("static/index.html")
+		if err != nil {
+			http.Error(w, "Could not load index.html", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html")
+		w.Write(data)
+	})
+
+	// Serve the rest of the static files
+	fs := http.FileServer(http.FS(staticFiles))
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static", fs))
+}
+
 // 启动 REST API 服务
 var serveCmd = &cobra.Command{
 	Use:   "serve",
@@ -51,6 +73,10 @@ var serveCmd = &cobra.Command{
 		router.HandleFunc("/models/{id}", stopModelHandler).Methods("DELETE")
 		router.HandleFunc("/stop", stopServerHandler).Methods("POST")
 		router.HandleFunc("/health", healthCheckHandler).Methods("GET")
+		router.HandleFunc("/list", listAllModelHandler).Methods("GET")
+
+		// 绑定静态文件
+		serveStaticFiles(router)
 
 		log.Fatal(http.ListenAndServe(":9090", router))
 	},
@@ -208,4 +234,51 @@ func stopServerHandler(w http.ResponseWriter, r *http.Request) {
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
+}
+
+// 列出本地所有模型
+func listAllModelHandler(w http.ResponseWriter, r *http.Request) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		http.Error(w, "Failed to get user home directory", http.StatusInternalServerError)
+		return
+	}
+
+	modelDir := filepath.Join(homeDir, ".oneinfer", "models")
+	metaPath := filepath.Join(modelDir, "models.json")
+
+	// 读取现有的 models.json
+	if _, err := os.Stat(metaPath); err != nil {
+		if os.IsNotExist(err) {
+			http.Error(w, "No models found.", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Failed to read models.json", http.StatusInternalServerError)
+		return
+	}
+
+	// 解析 models.json 文件
+	var models []map[string]string
+	file, err := os.ReadFile(metaPath)
+	if err != nil {
+		http.Error(w, "Failed to read models.json", http.StatusInternalServerError)
+		return
+	}
+	err = json.Unmarshal(file, &models)
+	if err != nil {
+		http.Error(w, "Failed to parse models.json", http.StatusInternalServerError)
+		return
+	}
+
+	// 创建一个新的切片，用来存储可序列化的模型数据
+	serializableModels := make([]map[string]string, 0, len(models))
+	for _, model := range models {
+		serializableModels = append(serializableModels, model)
+	}
+
+	// 返回模型数据
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(serializableModels); err != nil {
+		http.Error(w, "Failed to encode models", http.StatusInternalServerError)
+	}
 }

@@ -86,12 +86,8 @@ copy_so_libs:
 
 # 4. 编译 Go 项目
 build: llama copy_so_libs
-	@if [ ! -f $(ONEINFER_BIN) ]; then \
-		echo "Building oneinfer..."; \
-		go build -o $(ONEINFER_BIN) ./main.go; \
-	else \
-		echo "oneinfer binary already exists."; \
-	fi
+	@echo "Building oneinfer..."; \
+	go build -o $(ONEINFER_BIN) ./main.go; \
 
 # 5. 运行 `oneinfer`
 run: build
