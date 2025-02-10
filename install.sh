@@ -3,10 +3,12 @@
 # 安装目录
 INSTALL_DIR="/usr/local/bin"
 LLAMA_SERVER_DIR="/usr/local/oneinfer/llama"
+ONNX_SERVER_DIR="/usr/local/oneinfer/onnx"
 
 # 创建安装目录（如果不存在）
 mkdir -p $INSTALL_DIR
 mkdir -p $LLAMA_SERVER_DIR
+mkdir -p $ONNX_SERVER_DIR
 
 # 复制oneinfer到安装目录
 cp -f oneinfer $INSTALL_DIR
@@ -14,9 +16,13 @@ cp -f oneinfer $INSTALL_DIR
 # 复制llama server到对应目录
 cp -rf ./llama-server/* $LLAMA_SERVER_DIR
 
+# 复制llama server到对应目录
+cp -rf ./onnx-server/* $ONNX_SERVER_DIR
+
 # 添加执行权限
 chmod +x $INSTALL_DIR/oneinfer
 chmod +x $LLAMA_SERVER_DIR/llama-server
+chmod +x $ONNX_SERVER_DIR/onnxruntime_server
 
 # 更新系统环境变量，避免重复添加
 if ! grep -q "$INSTALL_DIR" ~/.bashrc; then

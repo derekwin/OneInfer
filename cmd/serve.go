@@ -97,9 +97,10 @@ func startModelHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 解析 JSON 请求
 	var req struct {
-		Model string `json:"model"`
-		Host  string `json:"host"`
-		Port  int    `json:"port"`
+		Backend string `json:"backend"`
+		Model   string `json:"model"`
+		Host    string `json:"host"`
+		Port    int    `json:"port"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -114,17 +115,40 @@ func startModelHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	listener.Close() // 关闭监听器，因为只是做占用检测
 
-	// 运行 Llama.cpp 进程（独立进程）
-	serverPath := "/usr/local/oneinfer/llama/llama-server"
-	cmd := exec.Command(serverPath, "--host", req.Host, "--port", strconv.Itoa(req.Port), "--model", req.Model, "-ngl", "9999")
+	var serverPath string
+	var cmd *exec.Cmd
+
+	// 选择 Backend 并构造命令
+	switch req.Backend {
+	case "llamacpp":
+		serverPath = "/usr/local/oneinfer/llama/llama-server"
+		if _, err := os.Stat(serverPath); os.IsNotExist(err) {
+			http.Error(w, "Llama.cpp server binary not found", http.StatusInternalServerError)
+			return
+		}
+		cmd = exec.Command(serverPath, "--host", req.Host, "--port", strconv.Itoa(req.Port), "--model", req.Model, "-ngl", "9999")
+
+	case "onnx":
+		serverPath = "/usr/local/oneinfer/onnx/onnxruntime_server"
+		if _, err := os.Stat(serverPath); os.IsNotExist(err) {
+			http.Error(w, "ONNX Runtime server binary not found", http.StatusInternalServerError)
+			return
+		}
+		cmd = exec.Command(serverPath, "--model-dir", req.Model, "--swagger-url-path", "/swagger", "--http-port", strconv.Itoa(req.Port))
+
+	default:
+		http.Error(w, "Unsupported backend: "+req.Backend, http.StatusBadRequest)
+		return
+	}
 
 	// 分离进程，不让 serve 进程被阻塞
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	// 启动进程
 	if err := cmd.Start(); err != nil {
-		http.Error(w, "Failed to start model", http.StatusInternalServerError)
+		http.Error(w, "Failed to start model: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -135,6 +159,7 @@ func startModelHandler(w http.ResponseWriter, r *http.Request) {
 		Host:    req.Host,
 		Port:    req.Port,
 		Command: cmd,
+		Status:  "running",
 	}
 	models[cmd.Process.Pid] = modelProcess
 

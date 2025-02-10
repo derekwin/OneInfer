@@ -37,11 +37,24 @@ var runCmd = &cobra.Command{
 			return
 		}
 
+		// 确定后端类型
+		var backend string
+		switch ext := filepath.Ext(modelPath); ext {
+		case ".onnx":
+			backend = "onnx"
+		case ".gguf":
+			backend = "llamacpp"
+		default:
+			fmt.Println("Unsupported model format:", ext)
+			return
+		}
+
 		// 构造请求数据
 		requestBody, _ := json.Marshal(map[string]interface{}{
-			"model": modelPath,
-			"host":  host,
-			"port":  port,
+			"backend": backend,
+			"model":   modelPath,
+			"host":    host,
+			"port":    port,
 		})
 
 		// 发送 REST 请求给 serve 进程

@@ -40,10 +40,10 @@ To build and install OneInfer:
    ```
 2. Run the `make` command:
    ```bash
-   make USE_CUDA=1
+   make USE_CUDA=1  # only llama.cpp
    ```
 
-   for different GPU/backend:
+   for different GPU/backend for llama.cpp:
    - **USE_BLAS=1**: For general CPU usage.
    - **USE_CUDA=1**: For NVIDIA GPUs.
    - **USE_MUSA=1**: For Meta's AI accelerators.
@@ -52,6 +52,12 @@ To build and install OneInfer:
    - **USE_Vulkan=1**: For GPUs that support Vulkan, offering efficient parallel computation.
    - **USE_Metal=1**: For Apple devices.
    - **USE_SYCL=1**: For a variety of heterogeneous devices (including CPU, GPU, FPGA) using oneAPI.
+
+   only add onnx backend by onnxruntime-server
+   ```
+   make LLAMA_CPP=no ONNX_SERVER=yes # with onlu onnx backend
+   # support cuda by download onnxruntime with gpu tag.
+   ```
 
 3. Install/Uninstall the binary:
    ```bash

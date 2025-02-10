@@ -1,4 +1,6 @@
 /llama.cpp/
 /llama-server/
+/onnxruntime-server/
+/onnx-server/
 oneinfer
 nohup.out
