@@ -64,15 +64,21 @@ llama: $(LLAMA_DIR)
 	@if [ ! -f "$(SERVER_BIN)" ]; then \
 		echo "Compiling llama server with CMake..."; \
 		cd $(LLAMA_DIR) && \
-		mkdir -p build && \
-		cd build && \
-		cmake $(CMAKE_OPTS) .. && \
-		make llama-server -j8; \
+		@if [ "$(OS)" == "Windows_NT" ]; then \
+			cmake -B build $(CMAKE_OPTS) && \
+			cmake --build build --config Release --target llama-server; \
+		else \
+			mkdir -p build && \
+			cd build && \
+			cmake $(CMAKE_OPTS) .. && \
+			make llama-server -j8; \
+		fi; \
 		mkdir -p $(SERVER_BIN_PATH); \
 		cp $(LLAMA_DIR)/build/bin/llama-server $(SERVER_BIN_PATH); \
 	else \
 		echo "Llama server already compiled."; \
 	fi
+
 
 # 3. 查找并复制所有生成的 `.so` 文件到 `$(SERVER_BIN)` 目录
 copy_libs:
