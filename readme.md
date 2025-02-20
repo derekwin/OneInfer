@@ -22,9 +22,9 @@ With OneInfer, users can enjoy the convenience of portable local deployment whil
 - [x] Using any pre-trained models from Hugging Face or ModelScope
 - [x] Support for serving LLM models using `llama.cpp` (.gguf models)
 - [x] Web UI
+- [x] Ready-to-use packaged application, allowing users to download and use it immediately without the need for compilation.
 - [ ] More inference backends to be supported
 - [ ] More types of models to be supported
-- [ ] Ready-to-use packaged application, allowing users to download and use it immediately without the need for compilation.
 
 ## Requirements
 - Python3 for downloading models from Hugging Face and ModelScope.
